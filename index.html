@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F766E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Pendientes</title>
+<style>
+:root{--ink:#1B2430;--paper:#F3F5F7;--card:#fff;--line:#DCE1E7;--muted:#6B7685;--brand:#0F766E;--brand-soft:#E1F2F0;--urgent:#C8312B;--urgent-soft:#FBE9E8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--ink:#E8ECF1;--paper:#12171D;--card:#1B222B;--line:#2E3844;--muted:#93A0B0;--brand:#2DB5A8;--brand-soft:#17332F;--urgent:#F0645E;--urgent-soft:#3A1E1D;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:env(safe-area-inset-top,0) 0 calc(76px + env(safe-area-inset-bottom,0))}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px}
+header{position:sticky;top:env(safe-area-inset-top,0);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 0}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:8px}
+h1{font-size:20px;margin:0}h2{font-size:16px;margin:18px 0 8px}.sub{font-size:12px;color:var(--muted)}
+.pill{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--brand-soft);color:var(--brand);border:0;cursor:default}
+.pill.off{background:#FCEBC4;color:#7A5200}.pill.bad{background:var(--urgent-soft);color:var(--urgent);cursor:pointer}
+input,select,textarea,button{font:inherit;color:inherit}
+.in{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--card)}.in:focus{outline:2px solid var(--brand)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:8px 0 4px}.filters select{width:auto;flex:none}
+.task{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:8px;display:flex;gap:10px}
+.task.urg{border-color:var(--urgent)}.task.done{opacity:.65}.task.done .tt{text-decoration:line-through}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:none;flex:none;cursor:pointer;color:#fff;font-size:14px;padding:0}.chk.on{background:var(--brand);border-color:var(--brand)}
+.body{min-width:0;flex:1}.tt{font-weight:650;cursor:pointer}.ds{font-size:13px;color:var(--muted);margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;font-size:12px}.tags span{padding:2px 8px;border-radius:6px;background:var(--paper)}
+.tags .p-urgente{background:var(--urgent);color:#fff;font-weight:600}.tags .p-alta{background:#FCEBC4;color:#7A5200}.tags .p-media{background:#DCEEFB;color:#14527A}
+.tags .who{background:var(--brand-soft);color:var(--brand)}.tags .late{background:var(--urgent-soft);color:var(--urgent);font-weight:600}
+.foot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;font-size:11px;color:var(--muted)}
+.foot select{font-size:12px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.urgbox h2{color:var(--urgent);display:flex;gap:8px;align-items:center}.cnt{background:var(--urgent);color:#fff;border-radius:99px;font-size:12px;padding:0 8px}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:12px;color:var(--muted);font-size:13px;background:var(--card)}
+.fab{position:fixed;right:16px;bottom:calc(66px + env(safe-area-inset-bottom,0));width:56px;height:56px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:30px;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;z-index:6}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;padding-bottom:env(safe-area-inset-bottom,0);z-index:5}
+nav button{background:none;border:0;padding:14px;font-weight:600;color:var(--muted);cursor:pointer}nav button.on{color:var(--brand)}
+.log{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.log li{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:14px}.log li:last-child{border:0}.log time{font-size:12px;color:var(--muted);flex:none}
+dialog{border:0;border-radius:16px;padding:0;width:min(480px,94vw);background:var(--paper);color:var(--ink)}dialog::backdrop{background:rgba(10,15,20,.55)}
+form,.box{padding:16px;display:grid;gap:10px}label{font-size:13px;font-weight:600;display:grid;gap:4px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:9px 16px;border-radius:9px;border:1px solid var(--line);background:var(--card);font-weight:600;cursor:pointer}.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}.btn.del{color:var(--urgent)}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}.row .del{margin-right:auto}
+.hint{font-size:13px;color:var(--muted)}.err{font-size:13px;color:var(--urgent)}.code{word-break:break-all;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px;font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><h1>Pendientes</h1><div class="sub" id="hello"></div></div>
+  <div style="display:flex;gap:8px;align-items:center"><button class="pill" id="sync">…</button><button class="btn" id="share" hidden style="padding:4px 12px">Compartir</button></div>
+</div></header>
+<div class="wrap" id="app"></div>
+<button class="fab" id="add" aria-label="Nueva tarea" hidden>+</button>
+<nav id="nav" hidden><button id="t1" class="on">Tareas</button><button id="t2">Actividad</button></nav>
+
+<dialog id="dlg"><form id="f">
+  <h2 id="ftitle" style="margin:0">Nueva tarea</h2>
+  <label>Título<input class="in" name="title" required></label>
+  <label>Descripción<textarea class="in" name="description" rows="3"></textarea></label>
+  <div class="g2"><label>Categoría<select class="in" name="category"></select></label><label>Prioridad<select class="in" name="priority"></select></label>
+  <label>Asignada a<select class="in" name="assignee"></select></label><label>Estado<select class="in" name="status"></select></label></div>
+  <label>Fecha y hora límite<input class="in" type="datetime-local" name="dueAt"></label>
+  <div class="row"><button type="button" class="btn del" id="del" hidden>Eliminar</button><button type="button" class="btn" id="cancel">Cancelar</button><button class="btn pri">Guardar</button></div>
+</form></dialog>
+
+<dialog id="dsh"><div class="box">
+  <h2 style="margin:0">Compartir con tu socio</h2>
+  <p class="hint">Envíale este enlace. Quien lo tenga puede ver y editar las tareas, así que no lo publiques.</p>
+  <div class="code" id="lnk"></div>
+  <div class="row"><button class="btn" id="cp">Copiar enlace</button><button class="btn" id="out">Salir de este espacio</button><button class="btn pri" id="shc">Cerrar</button></div>
+</div></dialog>
+
+<script>
+// ====== Datos y sincronización ======
+// Los datos viven en este dispositivo (funciona sin internet) y se sincronizan con un "espacio"
+// compartido en jsonblob.com (servicio gratuito, sin registro). Ambos móviles consultan cada 5 s.
+const API="https://jsonblob.com/api/jsonBlob", KEY="pendientes.v1";
+const CATS=["Inventario","Ventas","Proveedores","Mantenimiento","Finanzas","Otro"];
+const PRI=[["baja","Baja",1],["media","Media",2],["alta","Alta",3],["urgente","Urgente",4]];
+const STA=[["pendiente","Pendiente"],["progreso","En progreso"],["completada","Completada"],["bloqueada","Bloqueada / Esperando"]];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const opts=(a,sel)=>a.map(([v,l])=>`<option value="${v}"${v===sel?" selected":""}>${l}</option>`).join("");
+const fmt=ms=>new Date(ms).toLocaleString("es",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const pad=n=>String(n).padStart(2,"0");
+const toLocal=ms=>{if(!ms)return"";const d=new Date(ms);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const endToday=()=>{const d=new Date();d.setHours(23,59,59,999);return d.getTime()};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+let S={space:null,me:null,names:{A:"Socio A",B:"Socio B"},tasks:{},log:[]};
+try{S={...S,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const pack=()=>({tasks:S.tasks,log:S.log,names:S.names});
+const sig=d=>Object.entries(d.tasks||{}).map(([i,t])=>i+":"+t.updatedAt).sort().join("|")+"#"+(d.log||[]).length+JSON.stringify(d.names||{});
+let tab="t1",editing=null,busy=false,status="off",timer=null;
+const F={q:"",status:"activas",priority:"",assignee:"",category:""};
+const nameOf=k=>k==="any"||!k?"General":(S.me&&k===S.me.slot?"Tú":S.names[k]||k);
+const live=()=>Object.values(S.tasks).filter(t=>!t.deleted);
+
+function merge(r){
+  for(const [id,t] of Object.entries(r.tasks||{})){const l=S.tasks[id];if(!l||(t.updatedAt||0)>(l.updatedAt||0))S.tasks[id]=t}
+  const seen=new Set(S.log.map(x=>x.id));for(const x of r.log||[])if(!seen.has(x.id))S.log.push(x);
+  S.log.sort((a,b)=>b.at-a.at);S.log=S.log.slice(0,80);
+  for(const k of["A","B"])if(S.me&&k!==S.me.slot&&r.names&&r.names[k])S.names[k]=r.names[k];
+}
+function setStatus(s){status=s;const p=$("#sync");
+  p.className="pill"+(s==="ok"?"":s==="bad"?" bad":" off");
+  p.textContent={ok:"Sincronizado",sync:"Sincronizando…",off:"Sin conexión · guardado aquí",bad:"Espacio no encontrado · pulsa para recrearlo",none:"Sin compartir"}[s]}
+async function sync(){
+  if(!S.space||!S.me||busy)return;busy=true;setStatus("sync");
+  try{
+    const r=await fetch(`${API}/${S.space}`,{headers:{Accept:"application/json"},cache:"no-store"});
+    if(r.status===404){setStatus("bad");busy=false;return}
+    if(!r.ok)throw 0;
+    const remote=await r.json();merge(remote);save();
+    if(sig(remote)!==sig(pack()))
+      await fetch(`${API}/${S.space}`,{method:"PUT",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(pack())});
+    setStatus("ok");
+  }catch(e){setStatus("off")}
+  busy=false;render();
+}
+const later=()=>{clearTimeout(timer);timer=setTimeout(sync,700)};
+async function createSpace(){
+  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(pack())});
+  const loc=r.headers.get("Location");
+  if(!r.ok||!loc)throw new Error("noloc");
+  return loc.split("/").pop();
+}
+const parseCode=s=>{s=(s||"").trim();const m=s.match(/#([\w-]+)$/)||s.match(/jsonBlob\/([\w-]+)/i);return m?m[1]:(/^[\w-]{10,}$/.test(s)?s:"")};
+
+// ====== Acciones ======
+function logIt(verb,title){S.log.unshift({id:uid(),by:S.me.slot,verb,title,at:Date.now()})}
+function put(id,data,verb){
+  const old=S.tasks[id]||{};S.tasks[id]={...old,...data,id,updatedAt:Date.now()};
+  logIt(verb,data.title||old.title);save();render();later();
+}
+function setState(t,st){
+  const done=st==="completada";
+  put(t.id,{status:st,completedBy:done?S.me.slot:null,completedAt:done?Date.now():null},
+    done?"completó":"pasó a "+STA.find(s=>s[0]===st)[1].toLowerCase());
+}
+
+// ====== Interfaz ======
+function card(t){
+  const done=t.status==="completada",late=!done&&t.dueAt&&t.dueAt<Date.now(),p=PRI.find(x=>x[0]===t.priority)||PRI[1];
+  return `<article class="task ${t.priority==="urgente"&&!done?"urg":""} ${done?"done":""}">
+  <button class="chk ${done?"on":""}" data-chk="${t.id}" aria-label="${done?"Reabrir":"Completar"}">${done?"✓":""}</button>
+  <div class="body"><div class="tt" data-edit="${t.id}">${esc(t.title)}</div>${t.description?`<div class="ds">${esc(t.description).slice(0,140)}</div>`:""}
+  <div class="tags"><span class="p-${p[0]}">${p[1]}</span><span>${esc(t.category)}</span><span class="who">${esc(nameOf(t.assignee))}</span>${t.dueAt?`<span class="${late?"late":""}">${late?"Vencida · ":""}${fmt(t.dueAt)}</span>`:""}</div>
+  <div class="foot"><select data-st="${t.id}" aria-label="Estado">${opts(STA,t.status)}</select>
+  <span>${done&&t.completedBy?`Completada por ${esc(nameOf(t.completedBy))} · ${fmt(t.completedAt)}`:`Creada por ${esc(nameOf(t.createdBy))}`}</span></div></div></article>`;
+}
+function onboarding(){
+  const joining=!!S.space;
+  $("#app").innerHTML=`<div class="box" style="margin-top:24px"><h1>Pendientes</h1>
+  <p class="hint">Las tareas del negocio, al día entre los dos. ${joining?"Te han invitado a un espacio compartido.":""}</p>
+  <label>Tu nombre<input class="in" id="ob-name" placeholder="Ej.: Ana" autocomplete="given-name"></label>
+  <label>Eres<select class="in" id="ob-slot"><option value="A"${joining?"":" selected"}>Socio A (quien crea el espacio)</option><option value="B"${joining?" selected":""}>Socio B (quien se une)</option></select></label>
+  <div id="ob-err" class="err"></div>
+  ${joining?`<button class="btn pri" id="ob-go">Entrar</button>`:`
+  <button class="btn pri" id="ob-new">Crear espacio nuevo</button>
+  <p class="hint" style="margin:6px 0 0">¿Tu socio ya creó uno? Pega aquí su enlace o código:</p>
+  <input class="in" id="ob-code" placeholder="Enlace o código"><button class="btn" id="ob-join">Unirme</button>`}</div>`;
+  const ident=()=>{const n=$("#ob-name").value.trim();if(!n){$("#ob-err").textContent="Escribe tu nombre.";return null}
+    S.me={slot:$("#ob-slot").value,name:n};S.names[S.me.slot]=n;return true};
+  const fin=()=>{save();history.replaceState(null,"","#"+S.space);start()};
+  if(joining)$("#ob-go").onclick=()=>{if(ident())fin()};
+  else{
+    $("#ob-join").onclick=()=>{const c=parseCode($("#ob-code").value);if(!c){$("#ob-err").textContent="No reconozco ese enlace o código.";return}if(ident()){S.space=c;fin()}};
+    $("#ob-new").onclick=async()=>{if(!ident())return;$("#ob-new").disabled=true;
+      try{S.space=await createSpace();fin()}
+      catch(e){$("#ob-new").disabled=false;$("#ob-err").textContent="No pude crear el espacio automáticamente. Entra en jsonblob.com, escribe {} y pulsa Save; copia el código del final de la dirección y pégalo en «Unirme». Sin internet tampoco se puede crear.";}};
+  }
+}
+function render(){
+  if(!S.me){onboarding();return}
+  const app=$("#app");
+  if(tab==="t2"){app.innerHTML=`<h2>Registro de actividad</h2>${S.log.length?`<ul class="log">${S.log.map(a=>`<li><span><b>${esc(nameOf(a.by))}</b> ${esc(a.verb)} «${esc(a.title)}»</span><time>${fmt(a.at)}</time></li>`).join("")}</ul>`:'<div class="empty">Aún no hay actividad.</div>'}`;return}
+  const all=live(),eod=endToday(),q=F.q.toLowerCase();
+  const urg=all.filter(t=>t.status!=="completada"&&(t.priority==="urgente"||(t.dueAt&&t.dueAt<=eod))).sort((a,b)=>(a.dueAt||1e15)-(b.dueAt||1e15));
+  const vis=all.filter(t=>(!q||(t.title+" "+(t.description||"")).toLowerCase().includes(q))
+    &&(F.status==="todas"||(F.status==="activas"?t.status!=="completada":t.status===F.status))
+    &&(!F.priority||t.priority===F.priority)&&(!F.assignee||t.assignee===F.assignee)&&(!F.category||t.category===F.category))
+    .sort((a,b)=>(PRI.find(x=>x[0]===b.priority)?.[2]||0)-(PRI.find(x=>x[0]===a.priority)?.[2]||0)||(a.dueAt||1e15)-(b.dueAt||1e15));
+  const keep=document.activeElement&&document.activeElement.id==="q";
+  app.innerHTML=`<section class="urgbox"><h2>Urgentes para hoy <span class="cnt">${urg.length}</span></h2>
+  ${urg.length?urg.map(card).join(""):'<div class="empty">Nada urgente por hoy. Buen momento para adelantar pendientes.</div>'}</section>
+  <h2>Todas las tareas</h2><input class="in" id="q" type="search" placeholder="Buscar tarea…" value="${esc(F.q)}">
+  <div class="filters">
+  <select class="in" data-f="status">${opts([["activas","Activas"],["todas","Todas"],...STA],F.status)}</select>
+  <select class="in" data-f="priority">${opts([["","Prioridad"],...PRI],F.priority)}</select>
+  <select class="in" data-f="assignee">${opts([["","Asignada a"],["any","General"],["A",nameOf("A")],["B",nameOf("B")]],F.assignee)}</select>
+  <select class="in" data-f="category">${opts([["","Categoría"],...CATS.map(c=>[c,c])],F.category)}</select></div>
+  ${vis.length?vis.map(card).join(""):'<div class="empty">No hay tareas con estos filtros. Crea una con el botón +.</div>'}`;
+  if(keep){const i=$("#q");i.focus();i.setSelectionRange(i.value.length,i.value.length)}
+}
+function openForm(t){
+  editing=t;const f=$("#f");$("#ftitle").textContent=t?"Editar tarea":"Nueva tarea";
+  f.category.innerHTML=opts(CATS.map(c=>[c,c]),t?.category);f.priority.innerHTML=opts(PRI,t?.priority||"media");
+  f.assignee.innerHTML=opts([["any","General / Cualquiera"],["A",nameOf("A")],["B",nameOf("B")]],t?.assignee||"any");
+  f.status.innerHTML=opts(STA,t?.status||"pendiente");f.title.value=t?.title||"";f.description.value=t?.description||"";f.dueAt.value=toLocal(t?.dueAt);
+  $("#del").hidden=!t;$("#dlg").showModal();
+}
+document.addEventListener("click",e=>{
+  const c=e.target.closest("[data-chk]"),ed=e.target.closest("[data-edit]");
+  if(c){const t=S.tasks[c.dataset.chk];setState(t,t.status==="completada"?"pendiente":"completada")}
+  if(ed)openForm(S.tasks[ed.dataset.edit]);
+});
+document.addEventListener("change",e=>{
+  if(e.target.dataset.st)setState(S.tasks[e.target.dataset.st],e.target.value);
+  if(e.target.dataset.f){F[e.target.dataset.f]=e.target.value;render()}
+});
+document.addEventListener("input",e=>{if(e.target.id==="q"){F.q=e.target.value;render()}});
+$("#t1").onclick=()=>{tab="t1";$("#t1").classList.add("on");$("#t2").classList.remove("on");render()};
+$("#t2").onclick=()=>{tab="t2";$("#t2").classList.add("on");$("#t1").classList.remove("on");render()};
+$("#add").onclick=()=>openForm(null);$("#cancel").onclick=()=>$("#dlg").close();
+$("#del").onclick=()=>{if(!confirm("¿Eliminar esta tarea?"))return;const t=editing;$("#dlg").close();put(t.id,{deleted:true},"eliminó")};
+$("#f").onsubmit=e=>{
+  e.preventDefault();const f=e.target,now=Date.now(),done=f.status.value==="completada";
+  const data={title:f.title.value.trim(),description:f.description.value,category:f.category.value,priority:f.priority.value,
+    status:f.status.value,assignee:f.assignee.value,dueAt:f.dueAt.value?new Date(f.dueAt.value).getTime():null};
+  $("#dlg").close();
+  if(editing){const was=editing.status==="completada";
+    data.completedBy=done?(was?editing.completedBy:S.me.slot):null;data.completedAt=done?(was?editing.completedAt:now):null;put(editing.id,data,"editó")}
+  else put(uid(),{...data,createdBy:S.me.slot,createdAt:now,completedBy:done?S.me.slot:null,completedAt:done?now:null},"creó");
+};
+const link=()=>location.origin+location.pathname+"#"+S.space;
+$("#share").onclick=()=>{$("#lnk").textContent=link();$("#dsh").showModal()};
+$("#shc").onclick=()=>$("#dsh").close();
+$("#cp").onclick=async()=>{try{if(navigator.share)await navigator.share({title:"Pendientes",url:link()});else{await navigator.clipboard.writeText(link());$("#cp").textContent="¡Copiado!"}}catch(e){}};
+$("#out").onclick=()=>{if(confirm("Saldrás de este espacio y se borrarán los datos de este dispositivo. ¿Continuar?")){localStorage.removeItem(KEY);history.replaceState(null,"",location.pathname);location.reload()}};
+$("#sync").onclick=async()=>{ // espacio borrado por inactividad: lo recreamos con los datos guardados aquí
+  if(status!=="bad")return;try{S.space=await createSpace();save();history.replaceState(null,"","#"+S.space);sync();alert("Espacio recreado. Vuelve a enviar el enlace a tu socio.")}catch(e){alert("No se pudo recrear. Inténtalo con internet.")}};
+
+function start(){
+  const on=!!S.me;$("#add").hidden=!on;$("#nav").hidden=!on;$("#share").hidden=!on;
+  $("#hello").textContent=on?"Hola, "+S.me.name:"";
+  if(!on){setStatus("none");render();return}
+  render();sync();
+}
+// Enlace de invitación: .../#codigo
+const h=location.hash.slice(1);
+if(h&&h!==S.space){ if(!S.space||confirm("Este enlace es de otro espacio. ¿Cambiar a él? Se descartarán los datos de este dispositivo.")){
+  if(S.space){S.tasks={};S.log=[];S.me=null}S.space=h;save()}}
+start();
+setInterval(()=>{if(!document.hidden)sync()},5000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync()});
+addEventListener("online",sync);
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
